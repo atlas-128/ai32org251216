@@ -16,7 +16,7 @@ const cities = [
   { name: "Base16 (十六进制城)", charset: CITIES.BASE16, desc: "内存地址的语言" },
   { name: "Ai-Base32 (核心城)", charset: CITIES.BASE32, desc: "Ai32.org 的心脏。剔除混淆字符，优化大小写。", highlight: true },
   { name: "Ai-Base64 (传输城)", charset: CITIES.BASE64, desc: "网络传输标准，Q64 通道入口。" },
-  { name: "Ai-Base128 (旧:OldASCII城)", charset: base128.substring(0, 100) + "...", desc: "兼容所有 ASCII 键盘字符。Q128 通道入口。" },
+  { name: "Ai-Base128 (ASCII城)", charset: base128.substring(0, 100) + "...", desc: "兼容所有 ASCII 键盘字符。Q128 通道入口。" },
   { name: "Ai-Base16384 (汉字主城)", charset: chineseSample.substring(0, 100) + "...", desc: "囊括《通用规范汉字表》一级、二级、三级字。" },
 ];
 ---

@@ -12,12 +12,10 @@ export const CITIES = {
   // 你的列表: 0-9, A, B, C, d, e, F, G, H, J, K, M, n, P, Q(跳过), R, S, T, u, V, w, x, Y. 
   // 目前只有 31 个 (如果不算Q)。建议加入 'z' 或特殊符号来凑齐 32，或者将 '-' 计入数值。
   // 方案：将 '-' 计入 Base32 的第32个数值字符。
-  BASE32: "0123456789ABCdeFGHJKMnPQRSTuVwY-",//"0123456789ABCdeFGHJKMnPQRSTuVwxY", 
+  BASE32: "0123456789ABCdeFGHJKMnPQRSTuVw-Y",//"0123456789ABCdeFGHJKMnPQRSTuVwxY", 
   
   // Custom Base64: 1-0, a-z, A-Z, -, +
-//    BASE64: "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+",
-  BASE64: "0123456789ABCdeFGHJKMnPQRSTuVwY-abcDEfghiIjklLmNOopqrstUvWXxyzZ+",
-  //	   0123456789112345678921234567893123456789412345678951234567896123"
+  BASE64: "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+",
 };
 
 // 2. 动态生成高阶城市 (Base128, 256...)
