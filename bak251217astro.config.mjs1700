@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()],
-    output: 'static', // 静态输出，最快，最省资源
+    plugins: [tailwindcss()]
   }
 });
