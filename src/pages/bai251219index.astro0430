@@ -299,7 +299,7 @@ I love my Earth very much!……哈哈!?!</textarea>
         
         // 关键：显示位数
         const len = valStr.length;
-        document.getElementById('statA').textContent = `转换为10进制(全息数)共 ${len} 位10进制数`;
+        document.getElementById('statA').textContent = `共 ${len} 位数字`;
 
         tryAnalyze(); // 尝试触发分析
       }
@@ -319,7 +319,7 @@ I love my Earth very much!……哈哈!?!</textarea>
         
         // 关键：显示位数
         const len = valStr.length;
-        document.getElementById('statB').textContent = `全息数为 共 ${len} 位10进制数`;
+        document.getElementById('statB').textContent = `共 ${len} 位数字`;
 
         tryAnalyze(); // 尝试触发分析
       }
