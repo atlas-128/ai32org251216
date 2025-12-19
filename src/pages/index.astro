@@ -1,7 +1,7 @@
 ---
 // src/pages/index.astro
 // Project: Ai32.org
-// Version: 251218-Demo (Enhanced for Investor Demo)
+// Version: 251219-Comparison (Side-by-Side Demo)
 // Location: Amherst, MA
 // Dev: Terry Deng & Gemini
 ---
@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>Ai32.org | Project 251218</title>
     <style>
-      /* --- 极简主义设计风格 (Terry's Style) --- */
+      /* --- 核心基础样式 --- */
       :root {
         --font-serif: "Georgia", "Times New Roman", serif;
         --font-mono: "Menlo", "Consolas", "Monaco", monospace;
@@ -26,270 +26,227 @@
         font-family: var(--font-serif);
         background-color: var(--color-bg);
         color: var(--color-text);
-        max-width: 900px; /* 稍微加宽以容纳演示 */
+        max-width: 1200px; /* 加宽页面以容纳左右对比 */
         margin: 0 auto;
         padding: 40px 20px;
         line-height: 1.6;
       }
-      h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.05em;
-      }
+      h1 { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; letter-spacing: -0.05em; }
       .meta {
-        font-family: var(--font-serif);
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 3rem;
-        border-left: 2px solid #333;
-        padding-left: 15px;
+        font-family: var(--font-serif); font-size: 0.9rem; color: #555;
+        margin-bottom: 3rem; border-left: 3px solid #333; padding-left: 15px;
       }
       h2 {
-        font-size: 1.5rem;
-        margin-top: 3rem;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        font-size: 1.6rem; margin-top: 3rem; border-bottom: 2px solid #eee;
+        padding-bottom: 10px; display: flex; align-items: center; gap: 10px;
       }
       
-      /* --- 演示区域样式 --- */
-      .demo-box {
+      /* --- 演示区域容器 --- */
+      .demo-section {
         background: #f8f9fa;
         border: 1px solid #e0e0e0;
         padding: 25px;
         border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
       }
       
       textarea {
-        width: 100%;
-        height: 100px;
-        padding: 10px;
-        font-family: var(--font-mono);
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        margin-bottom: 15px;
-        font-size: 0.95rem;
-        resize: vertical;
+        width: 100%; height: 120px; padding: 15px;
+        font-family: var(--font-mono); border: 2px solid #ccc; border-radius: 6px;
+        margin-bottom: 20px; font-size: 1rem; resize: vertical;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
       }
 
-      .btn-group {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-
+      .btn-group { display: flex; gap: 15px; margin-bottom: 25px; }
       button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        font-weight: bold;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: opacity 0.2s;
-        font-family: var(--font-serif);
+        padding: 12px 24px; font-size: 1rem; font-weight: bold;
+        border: none; border-radius: 6px; cursor: pointer;
+        transition: transform 0.1s, opacity 0.2s; font-family: var(--font-serif);
+        color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
-      button:hover { opacity: 0.9; }
-      
-      .btn-a { background-color: var(--color-b32); color: white; }
-      .btn-b { background-color: var(--color-b64); color: white; }
+      button:active { transform: scale(0.98); }
+      .btn-a { background-color: var(--color-b32); }
+      .btn-b { background-color: var(--color-b64); }
 
-      .output-card {
+      /* --- 核心修改：左右对照布局 Grid --- */
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 左右各占 50% */
+        gap: 20px;
+        align-items: start;
+      }
+      
+      /* 手机端自动变为上下堆叠 */
+      @media (max-width: 768px) {
+        .comparison-grid { grid-template-columns: 1fr; }
+      }
+
+      .result-card {
         background: white;
         border: 1px solid #eee;
-        padding: 15px;
-        border-radius: 6px;
-        margin-bottom: 15px;
-      }
-      .output-card.b32-card { border-left: 5px solid var(--color-b32); }
-      .output-card.b64-card { border-left: 5px solid var(--color-b64); }
-
-      .output-label {
-        display: block;
-        font-size: 0.85rem;
-        color: #777;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-        font-weight: bold;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        display: none; /* 默认隐藏，点击后显示 */
       }
       
+      .result-card.card-a { border-top: 5px solid var(--color-b32); }
+      .result-card.card-b { border-top: 5px solid var(--color-b64); }
+
+      .card-header {
+        font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;
+        padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .output-group { margin-bottom: 20px; }
+      .output-label {
+        display: block; font-size: 0.8rem; color: #888;
+        margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em;
+      }
       .output-val {
         font-family: var(--font-mono);
-        word-break: break-all;
-        font-size: 1.1rem;
+        word-break: break-all; /* 关键：防止长数字撑破布局 */
+        font-size: 1rem;
         font-weight: bold;
+        line-height: 1.4;
       }
       
-      .b32-text { color: var(--color-b32); }
-      .b64-text { color: var(--color-b64); }
-      .int-text { color: #333; font-size: 0.9rem; }
+      .text-green { color: var(--color-b32); }
+      .text-blue { color: var(--color-b64); }
+      .text-dark { color: #333; font-size: 0.9rem; }
 
-      /* --- 现有样式保留 --- */
+      /* --- 城市列表样式 --- */
       .city-section { margin-bottom: 2rem; }
       .city-title { font-weight: bold; font-size: 1.1rem; }
       .city-desc { font-size: 0.95rem; color: #444; margin-bottom: 0.5rem; }
       .code-block {
-        font-family: var(--font-mono);
-        background: #f4f4f4;
-        padding: 10px;
-        border-radius: 4px;
-        word-break: break-all;
-        font-size: 0.9rem;
-        color: var(--color-accent);
+        font-family: var(--font-mono); background: #f4f4f4;
+        padding: 10px; border-radius: 4px; word-break: break-all;
+        font-size: 0.9rem; color: var(--color-accent);
       }
       
-      /* 简单的分割线 */
-      hr { border: 0; border-top: 1px solid #eee; margin: 3rem 0; }
+      /* 底部简单转换器 */
+      .simple-converter { margin-top: 20px; padding: 20px; background: white; border: 1px solid #eee; border-radius: 8px; }
+      .simple-input { width: 100%; padding: 8px; margin-bottom: 10px; font-family: monospace; font-size: 1.1rem; }
     </style>
   </head>
   <body>
     <h1>Ai32.org</h1>
     <div class="meta">
-      <p>Project 251218 | Dynamic Base System</p>
+      <p>Project 251219 | Comparative Demo Version</p>
       <p>Loc: Amherst, MA (01002)</p>
       <p>Dev: Astro on Coolify (Co-piloted by Gemini)</p>
     </div>
 
-    <h2>🚀 文本有损编码与压缩演示</h2>
-    <div class="demo-box">
+    <h2>🚀 文本有损编码对照演示</h2>
+    <div class="demo-section">
       <label class="output-label">输入任意人类自然语言 (String01)</label>
-      <textarea id="demoInput" placeholder="输入一段话，例如：Hello! How are you...">Hello! How Are you. I' am Terry Deng(老邓),What's your name?Do you like your Father?I love your Mother……哈哈!?!</textarea>
+      <textarea id="demoInput" placeholder="请输入一段较长的文本以观察压缩效果...">Hello! How Are you. I' am Terry Deng(老邓),What's your name?Do you like your Father?I love your Mother……哈哈!?!</textarea>
       
       <div class="btn-group">
-        <button class="btn-a" onclick="processA()">A: 转 Ai-Base32 (野蛮压缩)</button>
-        <button class="btn-b" onclick="processB()">B: 转 Ai-Base64 (高保真)</button>
+        <button class="btn-a" onclick="processA()">A: 执行 Ai-Base32 (野蛮压缩)</button>
+        <button class="btn-b" onclick="processB()">B: 执行 Ai-Base64 (高保真)</button>
       </div>
 
-      <div id="resultAreaA" style="display:none;">
-        <div class="output-card b32-card">
-          <div style="margin-bottom:15px;">
-            <span class="output-label">A2: Ai-Base32 压缩编码 (String)</span>
-            <div id="outA_str" class="output-val b32-text"></div>
-            <small style="color:#999">注：损失了大小写、标点，部分字符被强制转义或替换为 @</small>
+      <div class="comparison-grid">
+        
+        <div id="cardA" class="result-card card-a">
+          <div class="card-header text-green">A: Ai-Base32 结果</div>
+          
+          <div class="output-group">
+            <span class="output-label">A2: 压缩后的字符串 (String)</span>
+            <div id="outA_str" class="output-val text-green"></div>
+            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
+              * 丢失大小写/标点，特殊符转义
+            </div>
           </div>
-          <div>
-            <span class="output-label">A1: 对应的十进制全息数 (Base10 Integer)</span>
-            <div id="outA_int" class="output-val int-text"></div>
+          
+          <div class="output-group">
+            <span class="output-label">A1: 十进制全息数 (Base10)</span>
+            <div id="outA_int" class="output-val text-dark"></div>
           </div>
         </div>
-      </div>
 
-      <div id="resultAreaB" style="display:none;">
-        <div class="output-card b64-card">
-          <div style="margin-bottom:15px;">
-            <span class="output-label">B2: Ai-Base64 高保真编码 (String)</span>
-            <div id="outB_str" class="output-val b64-text"></div>
-            <small style="color:#999">注：保留了绝大部分标点和语义，使用了扩展字符集</small>
+        <div id="cardB" class="result-card card-b">
+          <div class="card-header text-blue">B: Ai-Base64 结果</div>
+          
+          <div class="output-group">
+            <span class="output-label">B2: 高保真字符串 (String)</span>
+            <div id="outB_str" class="output-val text-blue"></div>
+            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
+              * 保留标点与语义，高密度压缩
+            </div>
           </div>
-          <div>
-            <span class="output-label">B1: 对应的十进制全息数 (Base10 Integer)</span>
-            <div id="outB_int" class="output-val int-text"></div>
+          
+          <div class="output-group">
+            <span class="output-label">B1: 十进制全息数 (Base10)</span>
+            <div id="outB_int" class="output-val text-dark"></div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <hr>
-
     <h2>⚡️ 标准数字转换器 (Base10 Input)</h2>
-    <div class="demo-box" style="background:white;">
-      <label class="output-label" for="numInput">输入纯数字 (Base10)</label>
-      <input type="number" id="numInput" value="251218" style="width:100%; padding:8px; font-family:monospace; font-size:1.1rem; border:1px solid #ccc;" />
+    <div class="simple-converter">
+      <label class="output-label">输入纯数字 (Base10)</label>
+      <input type="number" id="numInput" class="simple-input" value="251219" />
       
-      <div style="margin-top:20px;">
-        <div class="output-label">Ai-Base32 Result</div>
-        <div id="output32" class="output-val b32-text">...</div>
-      </div>
-      <div style="margin-top:10px;">
-        <div class="output-label">Ai-Base64 Result</div>
-        <div id="output64" class="output-val b64-text">...</div>
+      <div style="margin-top:15px; display:grid; grid-template-columns: 100px 1fr; gap:10px; align-items:baseline;">
+        <span class="text-green" style="font-weight:bold;">Ai-Base32</span>
+        <span id="output32" class="output-val text-green">...</span>
+        
+        <span class="text-blue" style="font-weight:bold;">Ai-Base64</span>
+        <span id="output64" class="output-val text-blue">...</span>
       </div>
     </div>
 
     <h2>🏙 The Digital Cities</h2>
 
     <div class="city-section">
-      <div class="city-title">Ai-Base32 (核心城 - 32位局级)</div>
-      <div class="city-desc">
-        视觉零混淆。剔除 L,O,Q,S,V,Z,_。保留 - (减号)，引入 @。
-      </div>
+      <div class="city-title">Ai-Base32 (核心城 - 32位)</div>
+      <div class="city-desc">视觉零混淆，剔除 L,O,Q,S,V,Z,_。保留 -，引入 @。</div>
       <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@</div>
     </div>
 
     <div class="city-section">
-      <div class="city-title">Ai-Base64 (传输城 - 64位扩编)</div>
-      <div class="city-desc">
-        高密度传输。空格 (Space) 位于最后一位 (Index 63)。
-      </div>
+      <div class="city-title">Ai-Base64 (传输城 - 64位)</div>
+      <div class="city-desc">高密度传输。空格位于最后一位 (Index 63)。</div>
       <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@LQSVZ_.:()[]{}/?!+=*#$%&amp;&lt;&gt;,;|~^ </div>
     </div>
 
     <script is:inline>
-      // ==========================================
-      // 1. Ai32.org251218 宪章定义
-      // ==========================================
+      // 1. 宪章定义
       const CHARSET_32 = "0123456789ABCdeFGHiJKMnPRtuWXY-@";
-      // 扩展区：LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ (最后一位是空格)
       const EXTENSION_64 = "LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ ";
       const CHARSET_64 = CHARSET_32 + EXTENSION_64;
 
-      // ==========================================
-      // 2. 视觉映射字典 (Visual Homoglyph Map)
-      //    这里是核心黑科技：把人类语言“有损”映射到 Ai-Base 字符集
-      // ==========================================
-      
-      // 映射到 Base32 (极其野蛮)
+      // 2. 视觉映射字典 (野蛮压缩)
       const MAP_32 = {
         'l': '1', 'I': '1', '|': '1', 'L': '1',
         'o': '0', 'O': '0',
         's': '5', 'S': '5', 'z': '2', 'Z': '2',
-        ' ': '-', '_': '-', // 空格转减号
-        '!': 'i', // 叹号转 i
-        '?': '7', // 问号转 7
-        '.': '-', // 点转减号
-        ',': '-', 
-        // 大写转标准
+        ' ': '-', '_': '-', 
+        '!': 'i', '?': '7', '.': '-', ',': '-', 
         'D': 'd', 'E': 'e', 'f': 'F', 'g': 'G', 'h': 'H', 'j': 'J',
         'k': 'K', 'm': 'M', 'N': 'n', 'p': 'P', 'r': 'R', 'T': 't',
         'U': 'u', 'v': 'u', 'V': 'u', 'w': 'W', 'x': 'X', 'y': 'Y'
       };
 
-      // 映射到 Base64 (相对温柔，只转大小写)
-      // 注意：Base64 包含了大部分标点，所以不需要太多映射
-      // 我们主要处理那些不在表里的字符
-      
-      // ==========================================
-      // 3. 算法函数
-      // ==========================================
-
-      // 核心算法：将任意文本“压缩”为合法的 BaseX 字符串
+      // 3. 压缩与转换函数
       function compressText(text, charset, mapMode) {
         let result = "";
         for (let char of text) {
           let mappedChar = "";
-          
-          // 步骤 A: 检查字符是否原生就在 Charset 里
           if (charset.includes(char)) {
             mappedChar = char;
-          } 
-          // 步骤 B: 如果不在，尝试查字典 (视觉映射)
-          else {
+          } else {
             if (mapMode === 32) {
-               // Base32 模式：查字典，查不到就给 '@' (转义/未知)
                mappedChar = MAP_32[char] || MAP_32[char.toLowerCase()] || '@';
             } else {
-               // Base64 模式：
-               // 尝试找大写/小写替身 (Case Folding)
-               // 比如 'q' 不在表里(假设), 找 'Q'
-               // Ai-Base64 里 'Q' 在表里 (Index 33)
-               // 我们的表中: 0-31 混合了大小写。
-               // 简单策略：如果 char 不在表里，看看它的 upper 或 lower 在不在
                if (charset.includes(char.toUpperCase())) mappedChar = char.toUpperCase();
                else if (charset.includes(char.toLowerCase())) mappedChar = char.toLowerCase();
-               else mappedChar = "#"; // Base64 中未知字符用 # 或其他占位
+               else mappedChar = "#";
             }
           }
           result += mappedChar;
@@ -297,20 +254,18 @@
         return result;
       }
 
-      // 核心算法：将 BaseX 字符串 解码为 BigInt (Base10)
       function fromBase(str, charset) {
         let val = 0n;
         const base = BigInt(charset.length);
         for (let i = 0; i < str.length; i++) {
           const char = str[i];
           const index = charset.indexOf(char);
-          if (index === -1) continue; // 忽略非法字符
+          if (index === -1) continue;
           val = val * base + BigInt(index);
         }
         return val.toString();
       }
 
-      // 核心算法：将 Base10 转回 BaseX (用于下方的转换器)
       function toBase(num, charset) {
         if (num === "" || isNaN(num)) return "";
         let n = BigInt(num);
@@ -326,52 +281,47 @@
         return result;
       }
 
-      // ==========================================
-      // 4. DOM 事件处理
-      // ==========================================
-
+      // 4. 事件处理 (修复了覆盖问题)
+      
+      // 处理按钮 A
       function processA() {
         const input = document.getElementById('demoInput').value;
-        // 1. 压缩
         const compressed = compressText(input, CHARSET_32, 32);
-        // 2. 计算数值
         const bigIntVal = fromBase(compressed, CHARSET_32);
         
-        // 3. 显示
-        document.getElementById('resultAreaA').style.display = 'block';
-        document.getElementById('resultAreaB').style.display = 'none';
+        // 关键修改：只操作 cardA，不触碰 cardB
+        const cardA = document.getElementById('cardA');
+        cardA.style.display = 'block'; 
         
         document.getElementById('outA_str').textContent = compressed;
         document.getElementById('outA_int').textContent = bigIntVal;
       }
 
+      // 处理按钮 B
       function processB() {
         const input = document.getElementById('demoInput').value;
-        // 1. 压缩 (Mode 64)
         const compressed = compressText(input, CHARSET_64, 64);
-        // 2. 计算数值
         const bigIntVal = fromBase(compressed, CHARSET_64);
         
-        // 3. 显示
-        document.getElementById('resultAreaB').style.display = 'block';
-        document.getElementById('resultAreaA').style.display = 'none';
+        // 关键修改：只操作 cardB，不触碰 cardA
+        const cardB = document.getElementById('cardB');
+        cardB.style.display = 'block';
         
         document.getElementById('outB_str').textContent = compressed;
         document.getElementById('outB_int').textContent = bigIntVal;
       }
 
-      // 底部原有转换器的逻辑
+      // 底部转换器逻辑
       const inputEl = document.getElementById('numInput');
       const out32El = document.getElementById('output32');
       const out64El = document.getElementById('output64');
-
       function updateBottom() {
         const val = inputEl.value;
         out32El.textContent = toBase(val, CHARSET_32);
         out64El.textContent = toBase(val, CHARSET_64);
       }
       inputEl.addEventListener('input', updateBottom);
-      updateBottom(); // init
+      updateBottom();
     </script>
   </body>
 </html>
