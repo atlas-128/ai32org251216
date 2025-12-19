@@ -1,0 +1,327 @@
+---
+// src/pages/index.astro
+// Project: Ai32.org
+// Version: 251219-Comparison (Side-by-Side Demo)
+// Location: Amherst, MA
+// Dev: Terry Deng & Gemini
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Ai32.org | Project 251218</title>
+    <style>
+      /* --- 核心基础样式 --- */
+      :root {
+        --font-serif: "Georgia", "Times New Roman", serif;
+        --font-mono: "Menlo", "Consolas", "Monaco", monospace;
+        --color-bg: #ffffff;
+        --color-text: #111111;
+        --color-accent: #d32f2f;
+        --color-b32: #2E7D32; /* 绿色 */
+        --color-b64: #1565C0; /* 蓝色 */
+      }
+      body {
+        font-family: var(--font-serif);
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        max-width: 1200px; /* 加宽页面以容纳左右对比 */
+        margin: 0 auto;
+        padding: 40px 20px;
+        line-height: 1.6;
+      }
+      h1 { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; letter-spacing: -0.05em; }
+      .meta {
+        font-family: var(--font-serif); font-size: 0.9rem; color: #555;
+        margin-bottom: 3rem; border-left: 3px solid #333; padding-left: 15px;
+      }
+      h2 {
+        font-size: 1.6rem; margin-top: 3rem; border-bottom: 2px solid #eee;
+        padding-bottom: 10px; display: flex; align-items: center; gap: 10px;
+      }
+      
+      /* --- 演示区域容器 --- */
+      .demo-section {
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        padding: 25px;
+        border-radius: 8px;
+        margin-bottom: 40px;
+      }
+      
+      textarea {
+        width: 100%; height: 120px; padding: 15px;
+        font-family: var(--font-mono); border: 2px solid #ccc; border-radius: 6px;
+        margin-bottom: 20px; font-size: 1rem; resize: vertical;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .btn-group { display: flex; gap: 15px; margin-bottom: 25px; }
+      button {
+        padding: 12px 24px; font-size: 1rem; font-weight: bold;
+        border: none; border-radius: 6px; cursor: pointer;
+        transition: transform 0.1s, opacity 0.2s; font-family: var(--font-serif);
+        color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      button:active { transform: scale(0.98); }
+      .btn-a { background-color: var(--color-b32); }
+      .btn-b { background-color: var(--color-b64); }
+
+      /* --- 核心修改：左右对照布局 Grid --- */
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 左右各占 50% */
+        gap: 20px;
+        align-items: start;
+      }
+      
+      /* 手机端自动变为上下堆叠 */
+      @media (max-width: 768px) {
+        .comparison-grid { grid-template-columns: 1fr; }
+      }
+
+      .result-card {
+        background: white;
+        border: 1px solid #eee;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        display: none; /* 默认隐藏，点击后显示 */
+      }
+      
+      .result-card.card-a { border-top: 5px solid var(--color-b32); }
+      .result-card.card-b { border-top: 5px solid var(--color-b64); }
+
+      .card-header {
+        font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;
+        padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .output-group { margin-bottom: 20px; }
+      .output-label {
+        display: block; font-size: 0.8rem; color: #888;
+        margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em;
+      }
+      .output-val {
+        font-family: var(--font-mono);
+        word-break: break-all; /* 关键：防止长数字撑破布局 */
+        font-size: 1rem;
+        font-weight: bold;
+        line-height: 1.4;
+      }
+      
+      .text-green { color: var(--color-b32); }
+      .text-blue { color: var(--color-b64); }
+      .text-dark { color: #333; font-size: 0.9rem; }
+
+      /* --- 城市列表样式 --- */
+      .city-section { margin-bottom: 2rem; }
+      .city-title { font-weight: bold; font-size: 1.1rem; }
+      .city-desc { font-size: 0.95rem; color: #444; margin-bottom: 0.5rem; }
+      .code-block {
+        font-family: var(--font-mono); background: #f4f4f4;
+        padding: 10px; border-radius: 4px; word-break: break-all;
+        font-size: 0.9rem; color: var(--color-accent);
+      }
+      
+      /* 底部简单转换器 */
+      .simple-converter { margin-top: 20px; padding: 20px; background: white; border: 1px solid #eee; border-radius: 8px; }
+      .simple-input { width: 100%; padding: 8px; margin-bottom: 10px; font-family: monospace; font-size: 1.1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Ai32.org</h1>
+    <div class="meta">
+      <p>Project 251219 | Comparative Demo Version</p>
+      <p>Loc: Amherst, MA (01002)</p>
+      <p>Dev: Astro on Coolify (Co-piloted by Gemini)</p>
+    </div>
+
+    <h2>🚀 文本有损编码对照演示</h2>
+    <div class="demo-section">
+      <label class="output-label">输入任意人类自然语言 (String01)</label>
+      <textarea id="demoInput" placeholder="请输入一段较长的文本以观察压缩效果...">Hello! How Are you. I' am Terry Deng(老邓),What's your name?Do you like your Father?I love your Mother……哈哈!?!</textarea>
+      
+      <div class="btn-group">
+        <button class="btn-a" onclick="processA()">A: 执行 Ai-Base32 (野蛮压缩)</button>
+        <button class="btn-b" onclick="processB()">B: 执行 Ai-Base64 (高保真)</button>
+      </div>
+
+      <div class="comparison-grid">
+        
+        <div id="cardA" class="result-card card-a">
+          <div class="card-header text-green">A: Ai-Base32 结果</div>
+          
+          <div class="output-group">
+            <span class="output-label">A2: 压缩后的字符串 (String)</span>
+            <div id="outA_str" class="output-val text-green"></div>
+            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
+              * 丢失大小写/标点，特殊符转义
+            </div>
+          </div>
+          
+          <div class="output-group">
+            <span class="output-label">A1: 十进制全息数 (Base10)</span>
+            <div id="outA_int" class="output-val text-dark"></div>
+          </div>
+        </div>
+
+        <div id="cardB" class="result-card card-b">
+          <div class="card-header text-blue">B: Ai-Base64 结果</div>
+          
+          <div class="output-group">
+            <span class="output-label">B2: 高保真字符串 (String)</span>
+            <div id="outB_str" class="output-val text-blue"></div>
+            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
+              * 保留标点与语义，高密度压缩
+            </div>
+          </div>
+          
+          <div class="output-group">
+            <span class="output-label">B1: 十进制全息数 (Base10)</span>
+            <div id="outB_int" class="output-val text-dark"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <h2>⚡️ 标准数字转换器 (Base10 Input)</h2>
+    <div class="simple-converter">
+      <label class="output-label">输入纯数字 (Base10)</label>
+      <input type="number" id="numInput" class="simple-input" value="251219" />
+      
+      <div style="margin-top:15px; display:grid; grid-template-columns: 100px 1fr; gap:10px; align-items:baseline;">
+        <span class="text-green" style="font-weight:bold;">Ai-Base32</span>
+        <span id="output32" class="output-val text-green">...</span>
+        
+        <span class="text-blue" style="font-weight:bold;">Ai-Base64</span>
+        <span id="output64" class="output-val text-blue">...</span>
+      </div>
+    </div>
+
+    <h2>🏙 The Digital Cities</h2>
+
+    <div class="city-section">
+      <div class="city-title">Ai-Base32 (核心城 - 32位)</div>
+      <div class="city-desc">视觉零混淆，剔除 L,O,Q,S,V,Z,_。保留 -，引入 @。</div>
+      <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Ai-Base64 (传输城 - 64位)</div>
+      <div class="city-desc">高密度传输。空格位于最后一位 (Index 63)。</div>
+      <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@LQSVZ_.:()[]{}/?!+=*#$%&amp;&lt;&gt;,;|~^ </div>
+    </div>
+
+    <script is:inline>
+      // 1. 宪章定义
+      const CHARSET_32 = "0123456789ABCdeFGHiJKMnPRtuWXY-@";
+      const EXTENSION_64 = "LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ ";
+      const CHARSET_64 = CHARSET_32 + EXTENSION_64;
+
+      // 2. 视觉映射字典 (野蛮压缩)
+      const MAP_32 = {
+        'l': '1', 'I': '1', '|': '1', 'L': '1',
+        'o': '0', 'O': '0',
+        's': '5', 'S': '5', 'z': '2', 'Z': '2',
+        ' ': '-', '_': '-', 
+        '!': 'i', '?': '7', '.': '-', ',': '-', 
+        'D': 'd', 'E': 'e', 'f': 'F', 'g': 'G', 'h': 'H', 'j': 'J',
+        'k': 'K', 'm': 'M', 'N': 'n', 'p': 'P', 'r': 'R', 'T': 't',
+        'U': 'u', 'v': 'u', 'V': 'u', 'w': 'W', 'x': 'X', 'y': 'Y'
+      };
+
+      // 3. 压缩与转换函数
+      function compressText(text, charset, mapMode) {
+        let result = "";
+        for (let char of text) {
+          let mappedChar = "";
+          if (charset.includes(char)) {
+            mappedChar = char;
+          } else {
+            if (mapMode === 32) {
+               mappedChar = MAP_32[char] || MAP_32[char.toLowerCase()] || '@';
+            } else {
+               if (charset.includes(char.toUpperCase())) mappedChar = char.toUpperCase();
+               else if (charset.includes(char.toLowerCase())) mappedChar = char.toLowerCase();
+               else mappedChar = "#";
+            }
+          }
+          result += mappedChar;
+        }
+        return result;
+      }
+
+      function fromBase(str, charset) {
+        let val = 0n;
+        const base = BigInt(charset.length);
+        for (let i = 0; i < str.length; i++) {
+          const char = str[i];
+          const index = charset.indexOf(char);
+          if (index === -1) continue;
+          val = val * base + BigInt(index);
+        }
+        return val.toString();
+      }
+
+      function toBase(num, charset) {
+        if (num === "" || isNaN(num)) return "";
+        let n = BigInt(num);
+        if (n < 0n) return "Error";
+        if (n === 0n) return charset[0];
+        let result = "";
+        const base = BigInt(charset.length);
+        while (n > 0n) {
+          const remainder = n % base;
+          result = charset[Number(remainder)] + result;
+          n = n / base;
+        }
+        return result;
+      }
+
+      // 4. 事件处理 (修复了覆盖问题)
+      
+      // 处理按钮 A
+      function processA() {
+        const input = document.getElementById('demoInput').value;
+        const compressed = compressText(input, CHARSET_32, 32);
+        const bigIntVal = fromBase(compressed, CHARSET_32);
+        
+        // 关键修改：只操作 cardA，不触碰 cardB
+        const cardA = document.getElementById('cardA');
+        cardA.style.display = 'block'; 
+        
+        document.getElementById('outA_str').textContent = compressed;
+        document.getElementById('outA_int').textContent = bigIntVal;
+      }
+
+      // 处理按钮 B
+      function processB() {
+        const input = document.getElementById('demoInput').value;
+        const compressed = compressText(input, CHARSET_64, 64);
+        const bigIntVal = fromBase(compressed, CHARSET_64);
+        
+        // 关键修改：只操作 cardB，不触碰 cardA
+        const cardB = document.getElementById('cardB');
+        cardB.style.display = 'block';
+        
+        document.getElementById('outB_str').textContent = compressed;
+        document.getElementById('outB_int').textContent = bigIntVal;
+      }
+
+      // 底部转换器逻辑
+      const inputEl = document.getElementById('numInput');
+      const out32El = document.getElementById('output32');
+      const out64El = document.getElementById('output64');
+      function updateBottom() {
+        const val = inputEl.value;
+        out32El.textContent = toBase(val, CHARSET_32);
+        out64El.textContent = toBase(val, CHARSET_64);
+      }
+      inputEl.addEventListener('input', updateBottom);
+      updateBottom();
+    </script>
+  </body>
+</html>

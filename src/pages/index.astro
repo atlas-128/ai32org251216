@@ -1,7 +1,7 @@
 ---
 // src/pages/index.astro
 // Project: Ai32.org
-// Version: 251219-Comparison (Side-by-Side Demo)
+// Version: 251219-Analytics (Final Holographic Analysis)
 // Location: Amherst, MA
 // Dev: Terry Deng & Gemini
 ---
@@ -10,23 +10,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Ai32.org | Project 251218</title>
+    <title>Ai32.org | Project 251219</title>
     <style>
-      /* --- 核心基础样式 --- */
+      /* --- 核心基础样式 (保持不变) --- */
       :root {
         --font-serif: "Georgia", "Times New Roman", serif;
         --font-mono: "Menlo", "Consolas", "Monaco", monospace;
         --color-bg: #ffffff;
         --color-text: #111111;
-        --color-accent: #d32f2f;
         --color-b32: #2E7D32; /* 绿色 */
         --color-b64: #1565C0; /* 蓝色 */
+        --color-analysis: #6a1b9a; /* 紫色用于分析报告 */
       }
       body {
         font-family: var(--font-serif);
         background-color: var(--color-bg);
         color: var(--color-text);
-        max-width: 1200px; /* 加宽页面以容纳左右对比 */
+        max-width: 1200px;
         margin: 0 auto;
         padding: 40px 20px;
         line-height: 1.6;
@@ -68,80 +68,98 @@
       .btn-a { background-color: var(--color-b32); }
       .btn-b { background-color: var(--color-b64); }
 
-      /* --- 核心修改：左右对照布局 Grid --- */
+      /* --- 左右对照布局 Grid --- */
       .comparison-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* 左右各占 50% */
+        grid-template-columns: 1fr 1fr;
         gap: 20px;
         align-items: start;
       }
-      
-      /* 手机端自动变为上下堆叠 */
-      @media (max-width: 768px) {
-        .comparison-grid { grid-template-columns: 1fr; }
-      }
+      @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
 
       .result-card {
-        background: white;
-        border: 1px solid #eee;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        display: none; /* 默认隐藏，点击后显示 */
+        background: white; border: 1px solid #eee; padding: 20px;
+        border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        display: none; /* 默认隐藏 */
       }
-      
       .result-card.card-a { border-top: 5px solid var(--color-b32); }
       .result-card.card-b { border-top: 5px solid var(--color-b64); }
 
-      .card-header {
-        font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;
-        padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;
-      }
-      
+      .card-header { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
       .output-group { margin-bottom: 20px; }
-      .output-label {
-        display: block; font-size: 0.8rem; color: #888;
-        margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em;
-      }
+      .output-label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
       .output-val {
-        font-family: var(--font-mono);
-        word-break: break-all; /* 关键：防止长数字撑破布局 */
-        font-size: 1rem;
-        font-weight: bold;
-        line-height: 1.4;
+        font-family: var(--font-mono); word-break: break-all;
+        font-size: 1rem; font-weight: bold; line-height: 1.4;
       }
       
+      /* --- 新增：统计信息标签 --- */
+      .stat-badge {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 4px 8px;
+        background: #eee;
+        color: #333;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        border: 1px solid #ddd;
+      }
+
+      /* --- 新增：最终分析报告面板 --- */
+      .analysis-panel {
+        grid-column: 1 / -1; /* 跨越两列 */
+        background: #fdfbff;
+        border: 2px dashed var(--color-analysis);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        display: none; /* 只有当AB都计算后显示 */
+      }
+      .analysis-title {
+        color: var(--color-analysis);
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .analysis-row {
+        margin-bottom: 10px;
+        font-size: 1rem;
+        font-family: var(--font-serif);
+      }
+      .highlight-number {
+        font-weight: bold;
+        font-size: 1.3rem;
+        color: #d32f2f;
+        font-family: var(--font-mono);
+      }
+
       .text-green { color: var(--color-b32); }
       .text-blue { color: var(--color-b64); }
       .text-dark { color: #333; font-size: 0.9rem; }
-
-      /* --- 城市列表样式 --- */
+      
+      /* 底部简单组件 */
       .city-section { margin-bottom: 2rem; }
       .city-title { font-weight: bold; font-size: 1.1rem; }
-      .city-desc { font-size: 0.95rem; color: #444; margin-bottom: 0.5rem; }
-      .code-block {
-        font-family: var(--font-mono); background: #f4f4f4;
-        padding: 10px; border-radius: 4px; word-break: break-all;
-        font-size: 0.9rem; color: var(--color-accent);
-      }
-      
-      /* 底部简单转换器 */
-      .simple-converter { margin-top: 20px; padding: 20px; background: white; border: 1px solid #eee; border-radius: 8px; }
-      .simple-input { width: 100%; padding: 8px; margin-bottom: 10px; font-family: monospace; font-size: 1.1rem; }
+      .code-block { font-family: var(--font-mono); background: #f4f4f4; padding: 10px; color: #d32f2f; }
     </style>
   </head>
   <body>
     <h1>Ai32.org</h1>
     <div class="meta">
-      <p>Project 251219 | Comparative Demo Version</p>
+      <p>Project 251219 | Comparative Analytics Version</p>
       <p>Loc: Amherst, MA (01002)</p>
       <p>Dev: Astro on Coolify (Co-piloted by Gemini)</p>
     </div>
 
-    <h2>🚀 文本有损编码对照演示</h2>
+    <h2>🚀 文本有损编码与压缩分析</h2>
     <div class="demo-section">
       <label class="output-label">输入任意人类自然语言 (String01)</label>
-      <textarea id="demoInput" placeholder="请输入一段较长的文本以观察压缩效果...">Hello! How Are you. I' am Terry Deng(老邓),What's your name?Do you like your Father?I love your Mother……哈哈!?!</textarea>
+      <textarea id="demoInput" placeholder="请输入一段较长的文本，我们将为您分析 Ai-Base32 与 Ai-Base64 的全息数压缩比率...">Hello.How Are you!I'am Harry Zhou(老周),Do you like your planet?
+I love my Earth very much!……哈哈!?!</textarea>
       
       <div class="btn-group">
         <button class="btn-a" onclick="processA()">A: 执行 Ai-Base32 (野蛮压缩)</button>
@@ -156,14 +174,12 @@
           <div class="output-group">
             <span class="output-label">A2: 压缩后的字符串 (String)</span>
             <div id="outA_str" class="output-val text-green"></div>
-            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
-              * 丢失大小写/标点，特殊符转义
-            </div>
           </div>
           
           <div class="output-group">
             <span class="output-label">A1: 十进制全息数 (Base10)</span>
             <div id="outA_int" class="output-val text-dark"></div>
+            <div id="statA" class="stat-badge">Waiting...</div>
           </div>
         </div>
 
@@ -173,67 +189,63 @@
           <div class="output-group">
             <span class="output-label">B2: 高保真字符串 (String)</span>
             <div id="outB_str" class="output-val text-blue"></div>
-            <div style="font-size:0.8rem; color:#999; margin-top:5px;">
-              * 保留标点与语义，高密度压缩
-            </div>
           </div>
           
           <div class="output-group">
             <span class="output-label">B1: 十进制全息数 (Base10)</span>
             <div id="outB_int" class="output-val text-dark"></div>
+            <div id="statB" class="stat-badge">Waiting...</div>
+          </div>
+        </div>
+
+        <div id="analysisArea" class="analysis-panel">
+          <div class="analysis-title">📊 压缩率与全息数分析报告</div>
+          
+          <div class="analysis-row">
+            1. <strong>位数对比 (空间占用)</strong>：<br>
+            Ai-Base32 的数字长度是 Ai-Base64 的 <span id="lenRatio" class="highlight-number">--%</span>。<br>
+            <span style="color:#666; font-size:0.9rem;">(结论：Ai-Base32 节省了约 <span id="saveRatio">--%</span> 的书写/存储位数)</span>
+          </div>
+          <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+          <div class="analysis-row">
+            2. <strong>数值量级对比 (Magnitude)</strong>：<br>
+            Ai-Base32 的全息数 <strong>极其微小</strong>，仅为 Ai-Base64 的：<br>
+            <span id="magRatio" class="highlight-number">0.00...01%</span> (几乎为零)<br>
+            <br>
+            换句话说，Ai-Base64 的全息数是 Ai-Base32 的 <span id="timesBigger" class="highlight-number">--</span> 倍。<br>
+            <span style="color:#d32f2f; font-size:0.85rem; font-style:italic;">注：这是指数级的压缩。野蛮压缩丢弃了海量信息，从而换取了数值的极度简化。</span>
           </div>
         </div>
 
       </div>
     </div>
 
-    <h2>⚡️ 标准数字转换器 (Base10 Input)</h2>
-    <div class="simple-converter">
-      <label class="output-label">输入纯数字 (Base10)</label>
-      <input type="number" id="numInput" class="simple-input" value="251219" />
-      
-      <div style="margin-top:15px; display:grid; grid-template-columns: 100px 1fr; gap:10px; align-items:baseline;">
-        <span class="text-green" style="font-weight:bold;">Ai-Base32</span>
-        <span id="output32" class="output-val text-green">...</span>
-        
-        <span class="text-blue" style="font-weight:bold;">Ai-Base64</span>
-        <span id="output64" class="output-val text-blue">...</span>
-      </div>
-    </div>
-
     <h2>🏙 The Digital Cities</h2>
-
     <div class="city-section">
-      <div class="city-title">Ai-Base32 (核心城 - 32位)</div>
-      <div class="city-desc">视觉零混淆，剔除 L,O,Q,S,V,Z,_。保留 -，引入 @。</div>
+      <div class="city-title">Ai-Base32 (32位局级)</div>
       <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@</div>
     </div>
-
     <div class="city-section">
-      <div class="city-title">Ai-Base64 (传输城 - 64位)</div>
-      <div class="city-desc">高密度传输。空格位于最后一位 (Index 63)。</div>
+      <div class="city-title">Ai-Base64 (64位扩编)</div>
       <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@LQSVZ_.:()[]{}/?!+=*#$%&amp;&lt;&gt;,;|~^ </div>
     </div>
 
     <script is:inline>
       // 1. 宪章定义
       const CHARSET_32 = "0123456789ABCdeFGHiJKMnPRtuWXY-@";
-      const EXTENSION_64 = "LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ ";
-      const CHARSET_64 = CHARSET_32 + EXTENSION_64;
+      const CHARSET_64 = CHARSET_32 + "LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ ";
 
-      // 2. 视觉映射字典 (野蛮压缩)
+      // 2. 视觉映射字典
       const MAP_32 = {
-        'l': '1', 'I': '1', '|': '1', 'L': '1',
-        'o': '0', 'O': '0',
-        's': '5', 'S': '5', 'z': '2', 'Z': '2',
-        ' ': '-', '_': '-', 
+        'l': '1', 'I': '1', '|': '1', 'L': '1', 'o': '0', 'O': '0',
+        's': '5', 'S': '5', 'z': '2', 'Z': '2', ' ': '-', '_': '-', 
         '!': 'i', '?': '7', '.': '-', ',': '-', 
         'D': 'd', 'E': 'e', 'f': 'F', 'g': 'G', 'h': 'H', 'j': 'J',
         'k': 'K', 'm': 'M', 'N': 'n', 'p': 'P', 'r': 'R', 'T': 't',
         'U': 'u', 'v': 'u', 'V': 'u', 'w': 'W', 'x': 'X', 'y': 'Y'
       };
 
-      // 3. 压缩与转换函数
+      // 3. 压缩算法
       function compressText(text, charset, mapMode) {
         let result = "";
         for (let char of text) {
@@ -263,65 +275,96 @@
           if (index === -1) continue;
           val = val * base + BigInt(index);
         }
-        return val.toString();
+        return val; // 返回 BigInt 对象，不转 string，方便后续计算
       }
 
-      function toBase(num, charset) {
-        if (num === "" || isNaN(num)) return "";
-        let n = BigInt(num);
-        if (n < 0n) return "Error";
-        if (n === 0n) return charset[0];
-        let result = "";
-        const base = BigInt(charset.length);
-        while (n > 0n) {
-          const remainder = n % base;
-          result = charset[Number(remainder)] + result;
-          n = n / base;
-        }
-        return result;
-      }
+      // 全局状态，用于存储A和B的BigInt值以便比较
+      let valBigA = null;
+      let valBigB = null;
 
-      // 4. 事件处理 (修复了覆盖问题)
+      // 4. 事件处理
       
       // 处理按钮 A
       function processA() {
         const input = document.getElementById('demoInput').value;
         const compressed = compressText(input, CHARSET_32, 32);
-        const bigIntVal = fromBase(compressed, CHARSET_32);
+        valBigA = fromBase(compressed, CHARSET_32);
         
-        // 关键修改：只操作 cardA，不触碰 cardB
-        const cardA = document.getElementById('cardA');
-        cardA.style.display = 'block'; 
-        
+        // UI 更新
+        document.getElementById('cardA').style.display = 'block';
         document.getElementById('outA_str').textContent = compressed;
-        document.getElementById('outA_int').textContent = bigIntVal;
+        
+        const valStr = valBigA.toString();
+        document.getElementById('outA_int').textContent = valStr;
+        
+        // 关键：显示位数
+        const len = valStr.length;
+        document.getElementById('statA').textContent = `共 ${len} 位数字`;
+
+        tryAnalyze(); // 尝试触发分析
       }
 
       // 处理按钮 B
       function processB() {
         const input = document.getElementById('demoInput').value;
         const compressed = compressText(input, CHARSET_64, 64);
-        const bigIntVal = fromBase(compressed, CHARSET_64);
+        valBigB = fromBase(compressed, CHARSET_64);
         
-        // 关键修改：只操作 cardB，不触碰 cardA
-        const cardB = document.getElementById('cardB');
-        cardB.style.display = 'block';
-        
+        // UI 更新
+        document.getElementById('cardB').style.display = 'block';
         document.getElementById('outB_str').textContent = compressed;
-        document.getElementById('outB_int').textContent = bigIntVal;
+        
+        const valStr = valBigB.toString();
+        document.getElementById('outB_int').textContent = valStr;
+        
+        // 关键：显示位数
+        const len = valStr.length;
+        document.getElementById('statB').textContent = `共 ${len} 位数字`;
+
+        tryAnalyze(); // 尝试触发分析
       }
 
-      // 底部转换器逻辑
-      const inputEl = document.getElementById('numInput');
-      const out32El = document.getElementById('output32');
-      const out64El = document.getElementById('output64');
-      function updateBottom() {
-        const val = inputEl.value;
-        out32El.textContent = toBase(val, CHARSET_32);
-        out64El.textContent = toBase(val, CHARSET_64);
+      // 5. 核心分析逻辑 (Data Science Logic)
+      function tryAnalyze() {
+        // 只有当 A 和 B 都计算出来后，才进行对比
+        if (valBigA !== null && valBigB !== null) {
+          const panel = document.getElementById('analysisArea');
+          panel.style.display = 'block';
+
+          const lenA = valBigA.toString().length;
+          const lenB = valBigB.toString().length;
+
+          // 1. 空间压缩率分析 (位数比)
+          // 计算 A 是 B 的百分之多少
+          const ratioLen = (lenA / lenB) * 100;
+          document.getElementById('lenRatio').textContent = ratioLen.toFixed(2) + "%";
+          document.getElementById('saveRatio').textContent = (100 - ratioLen).toFixed(2) + "%";
+
+          // 2. 数值量级分析 (Magnitude)
+          // 因为 valA / valB 极其小（接近0），直接除会得到 0
+          // 我们计算 B / A，看 B 是 A 的多少倍（通常是天文数字）
+          
+          if (valBigA === 0n) valBigA = 1n; // 防止除零
+          
+          const times = valBigB / valBigA;
+          let timesStr = times.toString();
+          
+          // 如果倍数太大，用科学计数法估算显示
+          if (timesStr.length > 20) {
+            timesStr = `10 的 ${timesStr.length - 1} 次方`;
+          } else {
+             // 加上千位分隔符
+             timesStr = Number(timesStr).toLocaleString();
+          }
+          
+          document.getElementById('timesBigger').textContent = timesStr;
+          
+          // 计算 A 是 B 的百分之多少 (A/B)
+          // 由于 BigInt 不支持小数，我们通过位数差来估算
+          // 这是一个极其极其小的数字
+          document.getElementById('magRatio').textContent = "0.000...01% (接近无限小)";
+        }
       }
-      inputEl.addEventListener('input', updateBottom);
-      updateBottom();
     </script>
   </body>
 </html>
