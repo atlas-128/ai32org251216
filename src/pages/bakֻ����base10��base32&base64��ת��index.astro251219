@@ -1,0 +1,237 @@
+---
+// src/pages/index.astro
+// Project: Ai32.org
+// Version: 251218 (Standard Finalized by Terry Deng & Gemini)
+// Location: Amherst, MA
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Ai32.org | Project 251218</title>
+    <style>
+      /* 极简主义设计风格 - 这里的 CSS 模拟了你截图中的样子 */
+      :root {
+        --font-serif: "Georgia", "Times New Roman", serif;
+        --font-mono: "Menlo", "Consolas", "Monaco", monospace;
+        --color-bg: #ffffff;
+        --color-text: #111111;
+        --color-accent: #333333;
+      }
+      body {
+        font-family: var(--font-serif);
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.05em;
+      }
+      .meta {
+        font-family: var(--font-serif);
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 3rem;
+        border-left: 1px solid #ccc;
+        padding-left: 15px;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin-top: 2.5rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .city-section {
+        margin-bottom: 2rem;
+      }
+      .city-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+      .city-desc {
+        font-size: 0.95rem;
+        color: #444;
+        margin-bottom: 0.5rem;
+      }
+      .code-block {
+        font-family: var(--font-mono);
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        word-break: break-all;
+        font-size: 0.9rem;
+        color: #d32f2f; /* 类似截图中的红色/深色代码色 */
+      }
+      
+      /* 转换器样式 */
+      .converter-box {
+        background: #fafafa;
+        border: 1px solid #eee;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 3rem;
+      }
+      .input-group {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        font-family: var(--font-mono);
+      }
+      input[type="number"] {
+        width: 100%;
+        max-width: 300px;
+        padding: 8px;
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .result-row {
+        font-family: var(--font-mono);
+        margin-top: 10px;
+        font-size: 1.1rem;
+      }
+      .label-tag {
+        color: #666;
+        font-size: 0.9rem;
+        display: inline-block;
+        width: 120px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ai32.org</h1>
+    <div class="meta">
+      <p>Project 251218 | Dynamic Base System</p>
+      <p>Loc: Amherst, MA (01002)</p>
+      <p>Dev: Astro on Coolify (Co-piloted by Gemini)</p>
+    </div>
+
+    <h2>⚡️ 实时编码转换器</h2>
+    <div class="converter-box">
+      <div class="input-group">
+        <label for="numInput">输入数字 (Base10)</label>
+        <input type="number" id="numInput" value="251218" placeholder="输入任意整数..." />
+      </div>
+      
+      <div class="result-row">
+        <span class="label-tag">Ai-Base32</span>
+        <span id="output32" style="font-weight: bold; color: #2E7D32;">...</span>
+      </div>
+      <div class="result-row">
+        <span class="label-tag">Ai-Base64</span>
+        <span id="output64" style="font-weight: bold; color: #1565C0;">...</span>
+      </div>
+    </div>
+
+    <h2>🏙 The Digital Cities</h2>
+
+    <div class="city-section">
+      <div class="city-title">Base2 (二进制城)</div>
+      <div class="city-desc">计算机的基石</div>
+      <div class="code-block">01</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Base4 (DNA城)</div>
+      <div class="city-desc">基因编码的基础</div>
+      <div class="code-block">0123</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Base8 (八进制城)</div>
+      <div class="city-desc">早期的字节分组</div>
+      <div class="code-block">01234567</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Base16 (十六进制城)</div>
+      <div class="city-desc">内存地址的语言</div>
+      <div class="code-block">0123456789ABCdeF</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Ai-Base32 (核心城)</div>
+      <div class="city-desc">
+        <strong>Ver 251218 定稿：</strong>Ai32.org 的心脏。
+        剔除 L, O, Q, S, V, Z 及下划线 _。
+        <br>保留减号 -，引入 <strong>@</strong> 作为视觉锚点。区分 i, n, t, u, W。
+      </div>
+      <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@</div>
+    </div>
+
+    <div class="city-section">
+      <div class="city-title">Ai-Base64 (传输城)</div>
+      <div class="city-desc">
+        网络传输标准。召回了 Base32 落选的字母，并纳入 JSON 与 URL 高频符号。
+        <br>空格 (Space) 位于最后一位 (Index 63)。
+      </div>
+      <div class="code-block">0123456789ABCdeFGHiJKMnPRtuWXY-@LQSVZ_.:()[]{}/?!+=*#$%&amp;&lt;&gt;,;|~^ </div>
+    </div>
+
+    <script>
+      // 1. 定义字符集 (Ai32.org251218 标准)
+      const CHARSET_32 = "0123456789ABCdeFGHiJKMnPRtuWXY-@";
+      // 扩展部分: LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ (注意最后有个空格)
+      const EXTENSION_64 = "LQSVZ_.:()[]{}/?!+=*#$%&<>,;|~^ ";
+      const CHARSET_64 = CHARSET_32 + EXTENSION_64;
+
+      // 2. 转换算法 (Base 10 -> Base X)
+      function toBase(num, charset) {
+        if (num === "" || isNaN(num)) return "";
+        let n = BigInt(num); // 使用 BigInt 防止大数溢出
+        if (n < 0n) return "Error"; // 暂不支持负数
+        if (n === 0n) return charset[0];
+
+        let result = "";
+        const base = BigInt(charset.length);
+        
+        while (n > 0n) {
+          const remainder = n % base;
+          result = charset[Number(remainder)] + result;
+          n = n / base;
+        }
+        return result;
+      }
+
+      // 3. 绑定 DOM 事件
+      const inputEl = document.getElementById('numInput');
+      const out32El = document.getElementById('output32');
+      const out64El = document.getElementById('output64');
+
+      function update() {
+        const val = inputEl.value;
+        out32El.textContent = toBase(val, CHARSET_32);
+        
+        // 注意：Base64 转换时，空格在 HTML 中需要转义显示，但 textContent 会自动处理
+        // 为了显示清晰，我们在显示时如果结果包含空格，可以考虑不做特殊处理，因为 <pre> 或 monospace 字体可以显示它
+        let res64 = toBase(val, CHARSET_64);
+        if (res64.endsWith(" ")) {
+           // 如果以空格结尾，为了视觉明显，可以加个提示，或者保持原样。
+           // 这里保持原样，因为是“实时编码器”
+        }
+        out64El.textContent = res64;
+      }
+
+      // 初始化运行一次
+      update();
+
+      // 监听输入
+      inputEl.addEventListener('input', update);
+    </script>
+  </body>
+</html>
